@@ -2,8 +2,27 @@
 
 <body>
     <div class="container">
+        <div class="row" id="login">
+            <div class="col-md-12">
+                <h2>Login</h2>
+                <p>
+                    <input id="login_username" type="text" class="form-control" placeholder="Enter username" autocomplete="off">
+                </p>
+                <button type="submit" class="btn btn-primary btn_login">Login</button>
+            </div>
+        </div>
+        <div class="row" id="profile">
+            <div class="col-md-12">
+                <h2>Current profile <button type="submit" class="btn btn-danger btn_login">Logout</button></h2>
+                <p id="user"></p>
+                <p id="username"></p>
+                <p id="cash"></p>
+            </div>
+        </div>
+        <br>
         <div class="row">
             <div class="col-md-12">
+                <h2>Stock Summary</h2>
                 <table class="table table-hover table-responsive" id="summary">
                     <tr>
                         <th>Name</th>
@@ -12,18 +31,23 @@
                         <th>Change %</th>
                     </tr>
                 </table>
-                <h2>Buy</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <h2>Buy / Sell</h2>
                 <p>Choose stock to trade</p>
                 <select class="form-control" id="select_company">
                     <option></option>
                 </select>
                 <p>Quantity:
-                    <input id="quantity" type="text" class="form-control" placeholder="Quantity">
+                    <input id="quantity" type="text" class="form-control" placeholder="Quantity" autocomplete="off">
                 </p>
                 <div id="ready">
                     <p id="price">Price: 0.0</p>
-                    <p id="total_price">Total Price: 0.0</p>
-                    <button type="submit" class="btn btn-primary" id="buy_btn">Buy</button>
+                    <p id="total_price">Total price: 0.0</p>
+                    <button type="submit" class="btn btn-primary btn_trade">Buy</button>
+                    <button type="submit" class="btn btn-danger btn_trade">Sell</button>
                 </div>
             </div>
         </div>

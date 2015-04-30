@@ -1,8 +1,72 @@
 $(function() {
     var companies = new Array();
     var total_price = 0.0;
+    var username = "";
 
     $('#ready').hide();
+    $("#profile").hide();
+
+    // First thing first
+    $.ajax({
+        type: "GET",
+        url: "/investor_api",
+        success: function(data) {
+            if (!data)
+                alert("No data");
+            $.each(data, function(i, investor) {
+                $("#profile").show();
+                $("#login").hide();
+                $("#user").html("Name: " + investor.name);
+                $("#username").html("Username: " + investor.username);
+                $("#cash").html("Cash: $" + investor.cash);
+            });
+        },
+        dataType: 'json'
+    });
+
+    $('.btn_login').click(function() {
+        var login_type;
+
+        if ($(this).html() == "Login"){
+            login_type = "Login";
+        }
+        else if ($(this).html() == "Logout") {
+            login_type = "Logout"
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/login",
+            data: JSON.stringify({
+                login_info: {
+                    'username': $('#login_username').val(),
+                    'login_type': login_type
+                }
+            }),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function(user){
+                if (user == "" && login_type == "Login")
+                    alert("Wrong username");
+                else if (user != "" && login_type == "Login") {
+                    $('#login').hide();
+                    $.each(user, function(i, investor) {
+                        $("#profile").show();
+                        $("#user").html("Name: " + investor.name);
+                        $("#username").html("Username: " + investor.username);
+                        $("#cash").html("Cash: $" + investor.cash);
+                    });
+                } else {
+                    $("#profile").hide();
+                    $("#login").show();
+                    alert("You have successfully logged out");
+                }
+            },
+            failure: function(err) {
+                alert(err);
+            }
+        });
+    });
 
     // Get all companies
     $.ajax({
@@ -10,7 +74,6 @@ $(function() {
         url: "/companies_api",
         success: function(data) {
             $.each(data, function(i, company) {
-                console.log(company.name);
                 var temp = {
                     'name': company.name,
                     'price': company.price,
@@ -43,6 +106,8 @@ $(function() {
             if (company.name == $('#select_company').val()) {
                 $('#ready').show();
                 $('#price').html("Price: " + company.price.toFixed(2));
+                total_price = company.price * $('#quantity').val();
+                $('#total_price').html("Total price: " + total_price.toFixed(2));
             }
         });
     });
@@ -56,15 +121,25 @@ $(function() {
         });
     });
 
-    $('#buy_btn').click(function() {
+    $('.btn_trade').click(function() {
+        var trade_type;
+
+        if ($(this).html() == "Buy"){
+            trade_type = "Buy";
+            console.log("he");
+        }
+        else if ($(this).html() == "Sell")
+            trade_type = "Sell"
+
         $.ajax({
             type: "POST",
-            url: "/buy_api",
+            url: "/trade_api",
             data: JSON.stringify({
-                buy_details: {
+                stock: {
                     'name': $('#select_company').val(),
                     'price': total_price,
-                    'quantity': $('#quantity').val()
+                    'quantity': $('#quantity').val(),
+                    'trade_type': trade_type
                 }
             }),
             contentType: "application/json; charset=utf-8",
