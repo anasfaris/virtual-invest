@@ -1,0 +1,54 @@
+.roboto-thin {
+	font-family: 'Roboto', sans-serif;
+	font-weight: 100;
+}
+
+.roboto-light {
+	font-family: 'Roboto', sans-serif;
+	font-weight: 300;
+}
+
+.myriad-light {
+	font-family: "myriad-pro",sans-serif;
+	font-style: normal;
+	font-weight: 300;
+}
+
+.myriad-regular {
+	font-family: "myriad-pro",sans-serif;
+	font-style: normal;
+	font-weight: 400;
+}
+
+.main-icons a {
+	font-size: 30px;
+	color: #333333;
+	 transition: .25s ease-in-out;
+	-moz-transition: .25s ease-in-out;
+	-webkit-transition: .25s ease-in-out;
+}
+
+.main-icons a.dropbox:hover {
+    color: #bd2c00;
+}
+
+.main-icons a.apple:hover {
+    color: #999;
+}
+
+.main-icons a.paypal:hover {
+    color: #179bd7;
+}
+
+.main-icons a.stackoverflow:hover {
+    color: #fe7a15;
+}
+
+body {
+	height: 100%;
+	position: absolute;
+	top: 30%;
+	left: 0;
+	right: 0;
+	padding: 20px 0;
+}
