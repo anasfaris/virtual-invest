@@ -2,6 +2,7 @@ $(function() {
     var companies = new Array();
     var total_price = 0.0;
     var username = "";
+    var cash = 0.0;
 
     $('#ready').hide();
     $("#profile").hide();
@@ -11,14 +12,14 @@ $(function() {
         type: "GET",
         url: "/investor_api",
         success: function(data) {
-            if (!data)
-                alert("No data");
             $.each(data, function(i, investor) {
+                username = investor.username;
                 $("#profile").show();
                 $("#login").hide();
                 $("#user").html("Name: " + investor.name);
                 $("#username").html("Username: " + investor.username);
-                $("#cash").html("Cash: $" + investor.cash);
+                cash = investor.cash;
+                $("#cash").html("Cash: $" + cash.toFixed(2));
             });
         },
         dataType: 'json'
@@ -51,10 +52,12 @@ $(function() {
                 else if (user != "" && login_type == "Login") {
                     $('#login').hide();
                     $.each(user, function(i, investor) {
+                        username = investor.username;
                         $("#profile").show();
                         $("#user").html("Name: " + investor.name);
                         $("#username").html("Username: " + investor.username);
-                        $("#cash").html("Cash: $" + investor.cash);
+                        cash = investor.cash;
+                        $("#cash").html("Cash: $" + cash);
                     });
                 } else {
                     $("#profile").hide();
@@ -108,6 +111,12 @@ $(function() {
                 $('#price').html("Price: " + company.price.toFixed(2));
                 total_price = company.price * $('#quantity').val();
                 $('#total_price').html("Total price: " + total_price.toFixed(2));
+
+                if (cash < total_price) {
+                    $('#btn_buy').hide();
+                } else {
+                    $('#btn_buy').show();
+                }
             }
         });
     });
@@ -117,6 +126,12 @@ $(function() {
             if (company.name == $('#select_company').val()) {
                 total_price = company.price * $('#quantity').val();
                 $('#total_price').html("Total price: " + total_price.toFixed(2));
+
+                if (cash < total_price) {
+                    $('#btn_buy').hide();
+                } else {
+                    $('#btn_buy').show();
+                }
             }
         });
     });
@@ -126,7 +141,6 @@ $(function() {
 
         if ($(this).html() == "Buy"){
             trade_type = "Buy";
-            console.log("he");
         }
         else if ($(this).html() == "Sell")
             trade_type = "Sell"
@@ -139,13 +153,31 @@ $(function() {
                     'name': $('#select_company').val(),
                     'price': total_price,
                     'quantity': $('#quantity').val(),
-                    'trade_type': trade_type
+                    'trade_type': trade_type,
+                    'username': username
                 }
             }),
             contentType: "application/json; charset=utf-8",
             dataType: "json",
-            success: function(company){
-                $('#price_' + company.name).html(company.price.toFixed(2));
+            success: function(result){
+                $.each(companies, function(i, company) {
+                    if (company.name == $('#select_company').val()) {
+                        company.price = result.price;
+                        $('#price').html("Price: " + company.price.toFixed(2));
+                        total_price = company.price * $('#quantity').val();
+                        $('#total_price').html("Total price: " + total_price.toFixed(2));
+
+                        if (cash < total_price) {
+                            $('#btn_buy').hide();
+                        } else {
+                            $('#btn_buy').show();
+                        }
+                    }
+                });
+
+                $('#price_' + result.name).html(result.price.toFixed(2));
+                cash = result.cash;
+                $('#cash').html("Cash: $" + cash.toFixed(2));
             },
             failure: function(err) {
                 alert(err);

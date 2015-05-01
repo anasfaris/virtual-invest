@@ -95,34 +95,40 @@ def trade_api():
 	db = client.get_default_database()
 	companies = db['companies']
 	cursor = companies.find({'name':stock['name']})
+	result = {}
+	price = None
 
 	for doc in cursor:
+		price = doc['price'] * float(stock['quantity'])
 		if stock['trade_type'] == "Buy":
 			doc['price'] *= 1.01
 		else:
 			doc['price'] *= 0.99
 
+		result['name'] = doc['name']
+		result['price'] = doc['price']
+
 		# can be updated to read a new list rather than directly update and cause sync problem
 		companies.update({'_id':doc['_id']}, {"$set":doc})
 
+	investors = db['investors']
+	cursor = investors.find({'username':stock['username']})
+
+	for doc in cursor:
+		if stock['trade_type'] == "Buy":
+			doc['cash'] -= price
+		else:
+			doc['cash'] += price
+
+		result['cash'] = doc['cash']
+
+		investors.update({'_id':doc['_id']}, {"$set":doc})
+
 	client.close()
-	return dumps(doc, sort_keys=True, indent=4, default=json_util.default)
+	return result
 
 @route("/")
 def invest():
-	# user = []
-	# username_cookie = request.get_cookie('username')
-	# if username_cookie:
-	# 	client = MongoClient(MONGOLAB_URI)
-	# 	db = client.get_default_database()
-	# 	investors = db['investors']
-	# 	cursor = investors.find({"username":username_cookie})
-
-	# 	for doc in cursor:
-	# 		user.append(doc)
-
-	# 	client.close()
-	# 	return template('views/index.html', user=user)
 	return template('views/index.html')
 
 run(reloader=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), server='gevent')
