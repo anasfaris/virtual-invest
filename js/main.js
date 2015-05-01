@@ -94,7 +94,7 @@ $(function() {
                     'price_opening': company.price_opening
                 };
                 companies.push(temp);
-                company.last_price = company.price_opening;
+
                 var change_percentage = (company.price - company.last_price) / company.last_price * 100.0;
                     // Print company data unto table
                 $('#summary').append(
@@ -201,13 +201,12 @@ $(function() {
                             $('#btn_buy').show();
                         }
 
-                        company.last_price = company.price_opening;
                         var change_percentage = (company.price - company.last_price) / company.last_price * 100.0;
                         $('#percentage_' + company.name).html(change_percentage.toFixed(2));
 
                         $.each(stocks, function(i, stock) {
-
                             if (company.name == stock.name) {
+                                stock.quantity = result.quantity;
                                 if (stock.quantity < $('#quantity').val()) {
                                     $('#btn_sell').hide();
                                 } else {
