@@ -1,5 +1,6 @@
 $(function() {
     var companies = new Array();
+    var stocks = new Array();
     var total_price = 0.0;
     var username = "";
     var cash = 0.0;
@@ -20,6 +21,22 @@ $(function() {
                 $("#username").html("Username: " + investor.username);
                 cash = investor.cash;
                 $("#cash").html("Cash: $" + cash.toFixed(2));
+
+
+                $.each(investor.investment, function(i, stock) {
+                    var temp = {
+                        'name': stock.company_name,
+                        'quantity': stock.quantity
+                    };
+                    stocks.push(temp);
+
+                    $('#investment').append(
+                        '<tr>' +
+                        '<td>' + stock.company_name + '</td>' +
+                        '<td id="qty_' + stock.company_name + '">' + stock.quantity + '</td>' +
+                        '</tr>'
+                    );
+                });
             });
         },
         dataType: 'json'
@@ -28,10 +45,9 @@ $(function() {
     $('.btn_login').click(function() {
         var login_type;
 
-        if ($(this).html() == "Login"){
+        if ($(this).html() == "Login") {
             login_type = "Login";
-        }
-        else if ($(this).html() == "Logout") {
+        } else if ($(this).html() == "Logout") {
             login_type = "Logout"
         }
 
@@ -46,19 +62,12 @@ $(function() {
             }),
             contentType: "application/json; charset=utf-8",
             dataType: "json",
-            success: function(user){
+            success: function(user) {
                 if (user == "" && login_type == "Login")
                     alert("Wrong username");
                 else if (user != "" && login_type == "Login") {
                     $('#login').hide();
-                    $.each(user, function(i, investor) {
-                        username = investor.username;
-                        $(".profile").show();
-                        $("#user").html("Name: " + investor.name);
-                        $("#username").html("Username: " + investor.username);
-                        cash = investor.cash;
-                        $("#cash").html("Cash: $" + cash.toFixed(2));
-                    });
+                    $(".profile").show();
                 } else {
                     $(".profile").hide();
                     $("#login").show();
@@ -81,17 +90,18 @@ $(function() {
                     'name': company.name,
                     'price': company.price,
                     'change': company.change,
-                    'change_percentage': company.change_percentage
+                    'last_price': company.last_price,
+                    'price_opening': company.price_opening
                 };
                 companies.push(temp);
-
-                // Print company data unto table
+                company.last_price = company.price_opening;
+                var change_percentage = (company.price - company.last_price) / company.last_price * 100.0;
+                    // Print company data unto table
                 $('#summary').append(
                     '<tr>' +
                     '<td>' + company.name + '</td>' +
                     '<td id="price_' + company.name + '">' + company.price.toFixed(2) + '</td>' +
-                    '<td>' + company.change + '</td>' +
-                    '<td>' + company.change_percentage + '</td>' +
+                    '<td id="percentage_' + company.name + '">' + change_percentage.toFixed(2) + '</td>' +
                     '</tr>'
                 );
 
@@ -112,11 +122,20 @@ $(function() {
                 total_price = company.price * $('#quantity').val();
                 $('#total_price').html("Total price: " + total_price.toFixed(2));
 
-                if (cash < total_price) {
+                if (cash < total_price || $('#quantity').val() < 0 || !total_price) {
                     $('#btn_buy').hide();
                 } else {
                     $('#btn_buy').show();
                 }
+                $.each(stocks, function(i, stock) {
+                    if (company.name == stock.name) {
+                        if (stock.quantity < $('#quantity').val()) {
+                            $('#btn_sell').hide();
+                        } else {
+                            $('#btn_sell').show();
+                        }
+                    }
+                });
             }
         });
     });
@@ -127,11 +146,21 @@ $(function() {
                 total_price = company.price * $('#quantity').val();
                 $('#total_price').html("Total price: " + total_price.toFixed(2));
 
-                if (cash < total_price) {
+                if (cash < total_price || $('#quantity').val() < 0 || !total_price) {
                     $('#btn_buy').hide();
                 } else {
                     $('#btn_buy').show();
                 }
+
+                $.each(stocks, function(i, stock) {
+                    if (company.name == stock.name) {
+                        if (stock.quantity < $('#quantity').val()) {
+                            $('#btn_sell').hide();
+                        } else {
+                            $('#btn_sell').show();
+                        }
+                    }
+                });
             }
         });
     });
@@ -139,10 +168,9 @@ $(function() {
     $('.btn_trade').click(function() {
         var trade_type;
 
-        if ($(this).html() == "Buy"){
+        if ($(this).html() == "Buy") {
             trade_type = "Buy";
-        }
-        else if ($(this).html() == "Sell")
+        } else if ($(this).html() == "Sell")
             trade_type = "Sell"
 
         $.ajax({
@@ -159,7 +187,7 @@ $(function() {
             }),
             contentType: "application/json; charset=utf-8",
             dataType: "json",
-            success: function(result){
+            success: function(result) {
                 $.each(companies, function(i, company) {
                     if (company.name == $('#select_company').val()) {
                         company.price = result.price;
@@ -167,15 +195,31 @@ $(function() {
                         total_price = company.price * $('#quantity').val();
                         $('#total_price').html("Total price: " + total_price.toFixed(2));
 
-                        if (cash < total_price) {
+                        if (cash < total_price || $('#quantity').val() < 0 || !total_price) {
                             $('#btn_buy').hide();
                         } else {
                             $('#btn_buy').show();
                         }
+
+                        company.last_price = company.price_opening;
+                        var change_percentage = (company.price - company.last_price) / company.last_price * 100.0;
+                        $('#percentage_' + company.name).html(change_percentage.toFixed(2));
+
+                        $.each(stocks, function(i, stock) {
+
+                            if (company.name == stock.name) {
+                                if (stock.quantity < $('#quantity').val()) {
+                                    $('#btn_sell').hide();
+                                } else {
+                                    $('#btn_sell').show();
+                                }
+                            }
+                        });
                     }
                 });
 
                 $('#price_' + result.name).html(result.price.toFixed(2));
+                $('#qty_' + result.name).html(result.quantity);
                 cash = result.cash;
                 $('#cash').html("Cash: $" + cash.toFixed(2));
             },

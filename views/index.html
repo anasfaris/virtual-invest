@@ -17,6 +17,13 @@
                 <p id="user"></p>
                 <p id="username"></p>
                 <p id="cash"></p>
+                <p>Investment</p>
+                <table class="table table-hover table-responsive" id="investment">
+                    <tr>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                    </tr>
+                </table>
             </div>
         </div>
         <br>
@@ -27,8 +34,7 @@
                     <tr>
                         <th>Name</th>
                         <th>Price</th>
-                        <th>Change $</th>
-                        <th>Change %</th>
+                        <th>Change since last event %</th>
                     </tr>
                 </table>
             </div>
@@ -47,10 +53,13 @@
                     <p id="price">Price: 0.0</p>
                     <p id="total_price">Total price: 0.0</p>
                     <button type="submit" class="btn btn-primary btn_trade" id="btn_buy">Buy</button>
-                    <button type="submit" class="btn btn-default btn_trade">Sell</button>
+                    <button type="submit" class="btn btn-default btn_trade" id="btn_sell">Sell</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <br>
+    <br>
 </body>
 %include views/shared/footer.html

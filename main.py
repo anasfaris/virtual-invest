@@ -96,11 +96,12 @@ def trade_api():
 	cursor = companies.find({'name':stock['name']})
 	result = {}
 	price = None
-
+	qty = float(stock['quantity'])
 	for doc in cursor:
-		price = doc['price'] * float(stock['quantity'])
+		price = doc['price'] * qty
+
 		if stock['trade_type'] == "Buy":
-			doc['price'] *= 1.01
+			doc['price'] *= 1.015
 		else:
 			doc['price'] *= 0.99
 
@@ -116,8 +117,16 @@ def trade_api():
 	for doc in cursor:
 		if stock['trade_type'] == "Buy":
 			doc['cash'] -= price
+			for data in doc['investment']:
+				if stock['name'] == data['company_name']:
+					data['quantity'] += qty 
+					result['quantity'] = data['quantity']
 		else:
 			doc['cash'] += price
+			for data in doc['investment']:
+				if stock['name'] == data['company_name']:
+					data['quantity'] -= qty 
+					result['quantity'] = data['quantity']
 
 		result['cash'] = doc['cash']
 
