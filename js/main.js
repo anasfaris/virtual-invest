@@ -22,14 +22,13 @@ $(function() {
                 cash = investor.cash;
                 $("#cash").html("Cash: $" + cash.toFixed(2));
 
-
+                $('#investment').html('<tr><th>Name</th><th>Quantity</th></tr>');
                 $.each(investor.investment, function(i, stock) {
                     var temp = {
                         'name': stock.company_name,
                         'quantity': stock.quantity
                     };
                     stocks.push(temp);
-
                     $('#investment').append(
                         '<tr>' +
                         '<td>' + stock.company_name + '</td>' +
@@ -62,12 +61,34 @@ $(function() {
             }),
             contentType: "application/json; charset=utf-8",
             dataType: "json",
-            success: function(user) {
+            success: function(data) {
                 if (user == "" && login_type == "Login")
                     alert("Wrong username");
                 else if (user != "" && login_type == "Login") {
-                    $('#login').hide();
-                    $(".profile").show();
+                    $.each(data, function(i, investor) {
+                        username = investor.username;
+                        $(".profile").show();
+                        $("#login").hide();
+                        $("#user").html("Name: " + investor.name);
+                        $("#username").html("Username: " + investor.username);
+                        cash = investor.cash;
+                        $("#cash").html("Cash: $" + cash.toFixed(2));
+
+                        $('#investment').html('<tr><th>Name</th><th>Quantity</th></tr>');
+                        $.each(investor.investment, function(i, stock) {
+                            var temp = {
+                                'name': stock.company_name,
+                                'quantity': stock.quantity
+                            };
+                            stocks.push(temp);
+                            $('#investment').append(
+                                '<tr>' +
+                                '<td>' + stock.company_name + '</td>' +
+                                '<td id="qty_' + stock.company_name + '">' + stock.quantity + '</td>' +
+                                '</tr>'
+                            );
+                        });
+                    });
                 } else {
                     $(".profile").hide();
                     $("#login").show();
