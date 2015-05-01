@@ -50,7 +50,6 @@ def login():
 		if user:
 			response.set_cookie('username', user[0]['username'])
 			username_cookie = request.get_cookie('username')
-			print username_cookie
 
 		client.close()
 		return dumps(user, sort_keys=True, indent=4, default=json_util.default)

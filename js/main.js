@@ -5,7 +5,7 @@ $(function() {
     var cash = 0.0;
 
     $('#ready').hide();
-    $("#profile").hide();
+    $(".profile").hide();
 
     // First thing first
     $.ajax({
@@ -14,7 +14,7 @@ $(function() {
         success: function(data) {
             $.each(data, function(i, investor) {
                 username = investor.username;
-                $("#profile").show();
+                $(".profile").show();
                 $("#login").hide();
                 $("#user").html("Name: " + investor.name);
                 $("#username").html("Username: " + investor.username);
@@ -53,14 +53,14 @@ $(function() {
                     $('#login').hide();
                     $.each(user, function(i, investor) {
                         username = investor.username;
-                        $("#profile").show();
+                        $(".profile").show();
                         $("#user").html("Name: " + investor.name);
                         $("#username").html("Username: " + investor.username);
                         cash = investor.cash;
-                        $("#cash").html("Cash: $" + cash);
+                        $("#cash").html("Cash: $" + cash.toFixed(2));
                     });
                 } else {
-                    $("#profile").hide();
+                    $(".profile").hide();
                     $("#login").show();
                     alert("You have successfully logged out");
                 }
