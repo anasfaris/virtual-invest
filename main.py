@@ -124,12 +124,12 @@ def trade_api():
 		price_before_charge = price
 
 		if stock['trade_type'] == "Buy":
-			doc['price'] = round(doc['price'] * 1.01 + doc['quantity_bought'] / 300000.0, 2)
+			doc['price'] = round(doc['price'] + doc['quantity_bought'] / 100000.0, 2)
 			doc['quantity_bought'] += qty
 			if doc['quantity_bought'] > doc['quantity_max']:
 				doc['quantity_max'] = doc['quantity_bought']
 		else:
-			doc['price'] = round(doc['price'] * 0.995 - doc['quantity_bought'] / 350000.0, 2)
+			doc['price'] = round(doc['price'] - doc['quantity_bought'] / 100005.0, 2)
 			doc['quantity_bought'] -= qty
 
 		result['name'] = doc['name']
