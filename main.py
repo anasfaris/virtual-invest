@@ -13,6 +13,8 @@ from pymongo import MongoClient		# MongoDB client
 from bson.json_util import dumps
 from bson import json_util
 # from bson.objectid import ObjectId
+import numpy as np
+import random
 
 MONGOLAB_URI = os.environ['MONGOLAB_URI']
 
@@ -119,17 +121,26 @@ def trade_api():
 		return -1
 
 	qty = float(stock['quantity'])
+
 	for doc in cursor:
 		price = doc['price'] * qty
 		price_before_charge = price
 
+		sigma = 0.5 # standard deviation
+
 		if stock['trade_type'] == "Buy":
-			doc['price'] = round(doc['price'] + doc['quantity_bought'] / 100000.0, 2)
+			mu = qty / 1000.0 # mean
+			s = np.random.normal(mu, sigma, 1) * random.uniform(0,1)
+
+			doc['price'] = round(doc['price'] + s[0], 2)
 			doc['quantity_bought'] += qty
 			if doc['quantity_bought'] > doc['quantity_max']:
 				doc['quantity_max'] = doc['quantity_bought']
 		else:
-			doc['price'] = round(doc['price'] - doc['quantity_bought'] / 100005.0, 2)
+			mu = -1* qty / 1000 # mean
+			s = np.random.normal(mu, sigma, 1) * random.uniform(0,1)
+
+			doc['price'] = round(doc['price'] + s[0], 2)
 			doc['quantity_bought'] -= qty
 
 		result['name'] = doc['name']
