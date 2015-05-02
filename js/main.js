@@ -9,43 +9,6 @@ $(function() {
     $('#ready').hide();
     $(".profile").hide();
 
-    // First thing first
-    $.ajax({
-        type: "GET",
-        url: "/investor_api",
-        success: function(data) {
-            $.each(data, function(i, investor) {
-                username = investor.username;
-                $(".profile").show();
-                $("#login").hide();
-                $("#user").html("Name: " + investor.name);
-                $("#username").html("Username: " + investor.username);
-                cash = investor.cash;
-                $("#cash").html("Cash: $" + cash.toFixed(2));
-
-                $('#investment').html('<tr><th>Name</th><th>Quantity</th><th>Profit/Loss</th></tr>');
-                $.each(investor.investment, function(i, stock) {
-                    var temp = {
-                        'name': stock.name,
-                        "real_name": stock.real_name,
-                        'quantity': stock.quantity,
-                        'paid': stock.paid
-                    };
-                    stocks.push(temp);
-                    console.log(stock);
-                    $('#investment').append(
-                        '<tr>' +
-                        '<td>' + stock.real_name + '</td>' +
-                        '<td id="qty_' + stock.name + '">' + stock.quantity + '</td>' +
-                        '<td id="paid_' + stock.name + '">' + stock.paid + '</td>' +
-                        '</tr>'
-                    );
-                });
-            });
-        },
-        dataType: 'json'
-    });
-
     $('.btn_login').click(function() {
         var login_type;
 
@@ -88,11 +51,19 @@ $(function() {
                                 'paid': stock.paid
                             };
                             stocks.push(temp);
+
+                            var stock_profit = 0;
+                            $.each(companies, function(i, company) {
+                                if (company.name == stock.name) {
+                                    stock_profit = (stock.quantity * company.price - stock.paid) / stock.paid * 100;
+                                }
+                            });
+
                             $('#investment').append(
                                 '<tr>' +
                                 '<td>' + stock.real_name + '</td>' +
                                 '<td id="qty_' + stock.name + '">' + stock.quantity + '</td>' +
-                                '<td id="paid_' + stock.name + '">' + stock.paid + '</td>' +
+                                '<td id="paid_' + stock.name + '">' + stock_profit.toFixed(2) + '%</td>' +
                                 '</tr>'
                             );
                         });
@@ -139,6 +110,51 @@ $(function() {
                     '<option>' + company.real_name + '</option>'
                 );
             });
+
+            // First thing first
+            $.ajax({
+                type: "GET",
+                url: "/investor_api",
+                success: function(data) {
+                    $.each(data, function(i, investor) {
+                        username = investor.username;
+                        $(".profile").show();
+                        $("#login").hide();
+                        $("#user").html("Name: " + investor.name);
+                        $("#username").html("Username: " + investor.username);
+                        cash = investor.cash;
+                        $("#cash").html("Cash: $" + cash.toFixed(2));
+
+                        $('#investment').html('<tr><th>Name</th><th>Quantity</th><th>Profit/Loss</th></tr>');
+                        $.each(investor.investment, function(i, stock) {
+                            var temp = {
+                                'name': stock.name,
+                                "real_name": stock.real_name,
+                                'quantity': stock.quantity,
+                                'paid': stock.paid
+                            };
+                            stocks.push(temp);
+
+                            var stock_profit = 0;
+                            $.each(companies, function(i, company) {
+                                if (company.name == stock.name) {
+                                    stock_profit = (stock.quantity * company.price - stock.paid) / stock.paid * 100;
+                                }
+                            });
+
+                            $('#investment').append(
+                                '<tr>' +
+                                '<td>' + stock.real_name + '</td>' +
+                                '<td id="qty_' + stock.name + '">' + stock.quantity + '</td>' +
+                                '<td id="paid_' + stock.name + '">' + stock_profit.toFixed(2) + '%</td>' +
+                                '</tr>'
+                            );
+                        });
+                    });
+                },
+                dataType: 'json'
+            });
+
         },
         dataType: 'json'
     });
