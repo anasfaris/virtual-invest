@@ -4,6 +4,7 @@ $(function() {
     var total_price = 0.0;
     var username = "";
     var cash = 0.0;
+    var selected_company_name = "";
 
     $('#ready').hide();
     $(".profile").hide();
@@ -25,14 +26,16 @@ $(function() {
                 $('#investment').html('<tr><th>Name</th><th>Quantity</th></tr>');
                 $.each(investor.investment, function(i, stock) {
                     var temp = {
-                        'name': stock.company_name,
+                        'name': stock.name,
+                        "real_name": stock.real_name,
                         'quantity': stock.quantity
                     };
                     stocks.push(temp);
+                    console.log(stock);
                     $('#investment').append(
                         '<tr>' +
-                        '<td>' + stock.company_name + '</td>' +
-                        '<td id="qty_' + stock.company_name + '">' + stock.quantity + '</td>' +
+                        '<td>' + stock.real_name + '</td>' +
+                        '<td id="qty_' + stock.name + '">' + stock.quantity + '</td>' +
                         '</tr>'
                     );
                 });
@@ -77,14 +80,15 @@ $(function() {
                         $('#investment').html('<tr><th>Name</th><th>Quantity</th></tr>');
                         $.each(investor.investment, function(i, stock) {
                             var temp = {
-                                'name': stock.company_name,
+                                'name': stock.name,
+                                'real_name': stock.real_name,
                                 'quantity': stock.quantity
                             };
                             stocks.push(temp);
                             $('#investment').append(
                                 '<tr>' +
-                                '<td>' + stock.company_name + '</td>' +
-                                '<td id="qty_' + stock.company_name + '">' + stock.quantity + '</td>' +
+                                '<td>' + stock.real_name + '</td>' +
+                                '<td id="qty_' + stock.name + '">' + stock.quantity + '</td>' +
                                 '</tr>'
                             );
                         });
@@ -109,6 +113,7 @@ $(function() {
             $.each(data, function(i, company) {
                 var temp = {
                     'name': company.name,
+                    'real_name': company.real_name,
                     'price': company.price,
                     'change': company.change,
                     'last_price': company.last_price,
@@ -120,14 +125,14 @@ $(function() {
                     // Print company data unto table
                 $('#summary').append(
                     '<tr>' +
-                    '<td>' + company.name + '</td>' +
+                    '<td>' + company.real_name + '</td>' +
                     '<td id="price_' + company.name + '">' + company.price.toFixed(2) + '</td>' +
                     '<td id="percentage_' + company.name + '">' + change_percentage.toFixed(2) + '</td>' +
                     '</tr>'
                 );
 
                 $('#select_company').append(
-                    '<option>' + company.name + '</option>'
+                    '<option>' + company.real_name + '</option>'
                 );
             });
         },
@@ -137,7 +142,8 @@ $(function() {
     // Price update
     $('#select_company').change(function(event) {
         $.each(companies, function(i, company) {
-            if (company.name == $('#select_company').val()) {
+            if (company.real_name == $('#select_company').val()) {
+                selected_company_name = company.name;
                 $('#ready').show();
                 $('#price').html("Price: " + company.price.toFixed(2));
                 total_price = company.price * $('#quantity').val();
@@ -163,7 +169,7 @@ $(function() {
 
     $('#quantity').keyup(function(event) {
         $.each(companies, function(i, company) {
-            if (company.name == $('#select_company').val()) {
+            if (company.real_name == $('#select_company').val()) {
                 total_price = company.price * $('#quantity').val();
                 $('#total_price').html("Total price: " + total_price.toFixed(2));
 
@@ -199,7 +205,7 @@ $(function() {
             url: "/trade_api",
             data: JSON.stringify({
                 stock: {
-                    'name': $('#select_company').val(),
+                    'name': selected_company_name,
                     'price': total_price,
                     'quantity': $('#quantity').val(),
                     'trade_type': trade_type,
@@ -210,7 +216,7 @@ $(function() {
             dataType: "json",
             success: function(result) {
                 $.each(companies, function(i, company) {
-                    if (company.name == $('#select_company').val()) {
+                    if (company.real_name == $('#select_company').val()) {
                         company.price = result.price;
                         $('#price').html("Price: " + company.price.toFixed(2));
                         total_price = company.price * $('#quantity').val();

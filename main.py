@@ -96,14 +96,22 @@ def trade_api():
 	cursor = companies.find({'name':stock['name']})
 	result = {}
 	price = None
+
+	if not stock['quantity']:
+		return -1
+
 	qty = float(stock['quantity'])
 	for doc in cursor:
 		price = doc['price'] * qty
 
 		if stock['trade_type'] == "Buy":
-			doc['price'] *= 1.015
+			doc['price'] = round(doc['price'] * 1.01, 2)
+			doc['quantity_bought'] += qty
+			if doc['quantity_bought'] > doc['quantity_max']:
+				doc['quantity_max'] = doc['quantity_bought']
 		else:
-			doc['price'] *= 0.99
+			doc['price'] = round(doc['price'] * 0.995, 2)
+			doc['quantity_bought'] -= qty
 
 		result['name'] = doc['name']
 		result['price'] = doc['price']
@@ -116,15 +124,15 @@ def trade_api():
 
 	for doc in cursor:
 		if stock['trade_type'] == "Buy":
-			doc['cash'] -= price
+			doc['cash'] = round(doc['cash'] - price, 2)
 			for data in doc['investment']:
-				if stock['name'] == data['company_name']:
+				if stock['name'] == data['name']:
 					data['quantity'] += qty 
 					result['quantity'] = data['quantity']
 		else:
-			doc['cash'] += price
+			doc['cash'] = round(doc['cash'] + price, 2)
 			for data in doc['investment']:
-				if stock['name'] == data['company_name']:
+				if stock['name'] == data['name']:
 					data['quantity'] -= qty 
 					result['quantity'] = data['quantity']
 
@@ -138,6 +146,22 @@ def trade_api():
 @route("/")
 def invest():
 	return template('views/index.html')
+
+@route("/company")
+def companies_api():
+	client = MongoClient(MONGOLAB_URI)
+	db = client.get_default_database()
+	companies = db['companies']
+	cursor = companies.find()
+	companies_ls = []
+	
+	for doc in cursor:
+		incomes = {}
+		incomes['name'] = doc['real_name']
+		incomes['income'] = round(doc['quantity_max'], 2)
+		companies_ls.append(incomes)
+	client.close()
+	return template('views/company.html', companies_ls=companies_ls)
 
 run(reloader=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), server='gevent')
 

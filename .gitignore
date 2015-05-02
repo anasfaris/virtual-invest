@@ -58,3 +58,4 @@ target/
 
 .DS_Store
 .env
+script.py

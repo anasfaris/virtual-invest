@@ -1,7 +1,15 @@
 %include views/shared/header.html
 
+<script src="static/js/main.js"></script>
+
 <body>
     <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <img src="static/img/VI_logo.png" alt="Virtual Invest" class="img-responsive">
+            </div>
+        </div>
+        <br>
         <div class="row" id="login">
             <div class="col-md-12">
                 <h2>Login</h2>
@@ -13,7 +21,7 @@
         </div>
         <div class="row profile">
             <div class="col-md-12">
-                <h2>Current profile <button type="submit" class="btn btn-danger btn-sm btn_login">Logout</button></h2>
+                <h2>Current profile <button type="submit" class="btn btn-danger btn-xs btn_login">Logout</button></h2>
                 <p id="user"></p>
                 <p id="username"></p>
                 <p id="cash"></p>

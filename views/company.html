@@ -1,0 +1,24 @@
+%include views/shared/header.html
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h2>Company Income from Stock</h2>
+                <table class="table table-hover table-responsive" id="summary">
+                    <tr>
+                        <th>Name</th>
+                        <th>Income</th>
+                    </tr>
+                    % for company in companies_ls:
+                    <tr>
+                        <td>{{ company['name'] }}</td>
+                        <td>${{ company['income'] }}</td>
+                    </tr>
+                    % end
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+%include views/shared/footer.html
