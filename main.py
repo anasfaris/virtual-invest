@@ -72,6 +72,12 @@ def investor_api():
 		db = client.get_default_database()
 		investors = db['investors']
 		cursor = investors.find({"username":username_cookie})
+
+		# companies = db['companies']
+		# cursor2 = companies.find()
+
+		# for doc in cursor2:
+
 		client.close()
 		return dumps(cursor, sort_keys=True, indent=4, default=json_util.default)
 	else:
@@ -124,12 +130,14 @@ def trade_api():
 
 	for doc in cursor:
 		if stock['trade_type'] == "Buy":
+			price = price * 1.01 + 10
 			doc['cash'] = round(doc['cash'] - price, 2)
 			for data in doc['investment']:
 				if stock['name'] == data['name']:
 					data['quantity'] += qty 
 					result['quantity'] = data['quantity']
 		else:
+			price = price * 0.99 - 10
 			doc['cash'] = round(doc['cash'] + price, 2)
 			for data in doc['investment']:
 				if stock['name'] == data['name']:
@@ -145,7 +153,20 @@ def trade_api():
 
 @route("/")
 def invest():
-	return template('views/index.html')
+	MONGOLAB_URI="mongodb://heroku_app36386927:91dt3q2v6buluv8mg271s2mrlo@ds031852.mongolab.com:31852/heroku_app36386927"
+	client = MongoClient(MONGOLAB_URI)
+	db = client.get_default_database()
+
+	settings = db['settings']
+	settings_cursor = settings.find()
+
+	market_opened = False
+
+	for doc in settings_cursor:
+		market_opened = doc['open']
+
+	client.close()
+	return template('views/index.html', market_opened=market_opened)
 
 @route("/company")
 def companies_api():
@@ -162,6 +183,30 @@ def companies_api():
 		companies_ls.append(incomes)
 	client.close()
 	return template('views/company.html', companies_ls=companies_ls)
+
+@route("/rank")
+def rank():
+	client = MongoClient(MONGOLAB_URI)
+	db = client.get_default_database()
+	companies = db['companies']
+	companies_cursor = companies.find()
+
+	investors = db['investors']
+	investors_cursor = investors.find()
+	persons = []
+	
+	for doc in investors_cursor:
+		net_worth = doc['cash']
+		for c_doc in companies_cursor:
+			for stock in doc['investment']:
+				if stock['name'] == c_doc['name']:
+					worth = c_doc['price'] * stock['quantity']
+					net_worth += worth
+		persons.append([doc['name'], net_worth])
+
+	persons.sort(key=lambda tup: tup[1], reverse=True)
+
+	return template('views/rank.html', persons=persons)
 
 run(reloader=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), server='gevent')
 

@@ -1,0 +1,24 @@
+%include views/shared/header.html
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h2>Net Worth Table</h2>
+                <table class="table table-hover table-responsive" id="summary">
+                    <tr>
+                        <th>Name</th>
+                        <th>Net Worth</th>
+                    </tr>
+                    % for person in persons:
+                    <tr>
+                        <td>{{ person[0] }}</td>
+                        <td>${{ person[1] }}</td>
+                    </tr>
+                    % end
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+%include views/shared/footer.html
