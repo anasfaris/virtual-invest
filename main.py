@@ -73,11 +73,6 @@ def investor_api():
 		investors = db['investors']
 		cursor = investors.find({"username":username_cookie})
 
-		# companies = db['companies']
-		# cursor2 = companies.find()
-
-		# for doc in cursor2:
-
 		client.close()
 		return dumps(cursor, sort_keys=True, indent=4, default=json_util.default)
 	else:
@@ -95,6 +90,21 @@ def companies_api():
 @route("/trade_api", method="POST")
 def trade_api():
 	stock = request.json['stock']
+
+	# Check if market is opened
+
+	settings = db['settings']
+	settings_cursor = settings.find()
+
+	market_opened = False
+
+	for doc in settings_cursor:
+		market_opened = doc['open']
+
+	if not market_opened:
+		return -1
+
+	# Resume operation if market is opened
 	
 	client = MongoClient(MONGOLAB_URI)
 	db = client.get_default_database()
