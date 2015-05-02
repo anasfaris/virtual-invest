@@ -185,6 +185,13 @@ $(function() {
                 });
             }
         });
+        if ($('#quantity').val() > 1000) {
+            $('#btn_buy').hide();
+            $('#btn_sell').hide();
+        } else {
+            $('#btn_buy').show();
+            $('#btn_sell').show();
+        }
     });
 
     $('#quantity').keyup(function(event) {
@@ -210,6 +217,13 @@ $(function() {
                 });
             }
         });
+        if ($('#quantity').val() > 1000) {
+            $('#btn_buy').hide();
+            $('#btn_sell').hide();
+        } else {
+            $('#btn_buy').show();
+            $('#btn_sell').show();
+        }
     });
 
     $('.btn_trade').click(function() {
@@ -268,6 +282,14 @@ $(function() {
                 $('#qty_' + result.name).html(result.quantity);
                 cash = result.cash;
                 $('#cash').html("Cash: $" + cash.toFixed(2));
+
+                if ($('#quantity').val() > 1000) {
+                    $('#btn_buy').hide();
+                    $('#btn_sell').hide();
+                } else {
+                    $('#btn_buy').show();
+                    $('#btn_sell').show();
+                }
             },
             failure: function(err) {
                 alert(err);

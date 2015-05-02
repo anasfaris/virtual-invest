@@ -129,7 +129,7 @@ def trade_api():
 		sigma = 0.5 # standard deviation
 
 		if stock['trade_type'] == "Buy":
-			mu = qty / 1000.0 # mean
+			mu = qty / 1250.0 # mean
 			s = np.random.normal(mu, sigma, 1) * random.uniform(0,1)
 
 			doc['price'] = round(doc['price'] + s[0], 2)
@@ -137,7 +137,7 @@ def trade_api():
 			if doc['quantity_bought'] > doc['quantity_max']:
 				doc['quantity_max'] = doc['quantity_bought']
 		else:
-			mu = -1* qty / 1000 # mean
+			mu = -1* qty / 1100 # mean
 			s = np.random.normal(mu, sigma, 1) * random.uniform(0,1)
 
 			doc['price'] = round(doc['price'] + s[0], 2)
