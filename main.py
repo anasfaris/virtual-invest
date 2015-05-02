@@ -124,12 +124,12 @@ def trade_api():
 		price_before_charge = price
 
 		if stock['trade_type'] == "Buy":
-			doc['price'] = round(doc['price'] * 1.01, 2)
+			doc['price'] = round(doc['price'] * 1.01 + doc['quantity_bought'] / 300000.0, 2)
 			doc['quantity_bought'] += qty
 			if doc['quantity_bought'] > doc['quantity_max']:
 				doc['quantity_max'] = doc['quantity_bought']
 		else:
-			doc['price'] = round(doc['price'] * 0.995, 2)
+			doc['price'] = round(doc['price'] * 0.995 - doc['quantity_bought'] / 350000.0, 2)
 			doc['quantity_bought'] -= qty
 
 		result['name'] = doc['name']
@@ -205,6 +205,7 @@ def rank():
 	db = client.get_default_database()
 	companies = db['companies']
 	companies_cursor = companies.find()
+	companies_ls = list(companies_cursor)
 
 	investors = db['investors']
 	investors_cursor = investors.find()
@@ -212,7 +213,7 @@ def rank():
 	
 	for doc in investors_cursor:
 		net_worth = doc['cash']
-		for c_doc in companies_cursor:
+		for c_doc in companies_ls:
 			for stock in doc['investment']:
 				if stock['name'] == c_doc['name']:
 					worth = c_doc['price'] * stock['quantity']
