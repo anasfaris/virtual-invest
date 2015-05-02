@@ -22,7 +22,7 @@ def eat_cookies():
 	return cookie_id
 
 #specifying the path for the files
-@route('/static/<filepath:path>')
+@route('/<filepath:path>')
 def server_static(filepath):
 	return static_file(filepath, root='.')
 
@@ -93,6 +93,9 @@ def trade_api():
 
 	# Check if market is opened
 
+	client = MongoClient(MONGOLAB_URI)
+	db = client.get_default_database()
+
 	settings = db['settings']
 	settings_cursor = settings.find()
 
@@ -105,13 +108,12 @@ def trade_api():
 		return -1
 
 	# Resume operation if market is opened
-	
-	client = MongoClient(MONGOLAB_URI)
-	db = client.get_default_database()
+
 	companies = db['companies']
 	cursor = companies.find({'name':stock['name']})
 	result = {}
 	price = None
+	price_before_charge = None
 
 	if not stock['quantity']:
 		return -1
@@ -119,6 +121,7 @@ def trade_api():
 	qty = float(stock['quantity'])
 	for doc in cursor:
 		price = doc['price'] * qty
+		price_before_charge = price
 
 		if stock['trade_type'] == "Buy":
 			doc['price'] = round(doc['price'] * 1.01, 2)
@@ -146,6 +149,7 @@ def trade_api():
 				if stock['name'] == data['name']:
 					data['quantity'] += qty 
 					result['quantity'] = data['quantity']
+					data['paid'] += price_before_charge
 		else:
 			price = price * 0.99 - 10
 			doc['cash'] = round(doc['cash'] + price, 2)
@@ -153,6 +157,7 @@ def trade_api():
 				if stock['name'] == data['name']:
 					data['quantity'] -= qty 
 					result['quantity'] = data['quantity']
+					data['paid'] -= price_before_charge
 
 		result['cash'] = doc['cash']
 

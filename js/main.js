@@ -23,12 +23,13 @@ $(function() {
                 cash = investor.cash;
                 $("#cash").html("Cash: $" + cash.toFixed(2));
 
-                $('#investment').html('<tr><th>Name</th><th>Quantity</th></tr>');
+                $('#investment').html('<tr><th>Name</th><th>Quantity</th><th>Profit/Loss</th></tr>');
                 $.each(investor.investment, function(i, stock) {
                     var temp = {
                         'name': stock.name,
                         "real_name": stock.real_name,
-                        'quantity': stock.quantity
+                        'quantity': stock.quantity,
+                        'paid': stock.paid
                     };
                     stocks.push(temp);
                     console.log(stock);
@@ -36,6 +37,7 @@ $(function() {
                         '<tr>' +
                         '<td>' + stock.real_name + '</td>' +
                         '<td id="qty_' + stock.name + '">' + stock.quantity + '</td>' +
+                        '<td id="paid_' + stock.name + '">' + stock.paid + '</td>' +
                         '</tr>'
                     );
                 });
@@ -77,18 +79,20 @@ $(function() {
                         cash = investor.cash;
                         $("#cash").html("Cash: $" + cash.toFixed(2));
 
-                        $('#investment').html('<tr><th>Name</th><th>Quantity</th></tr>');
+                        $('#investment').html('<tr><th>Name</th><th>Quantity</th><th>Profit/Loss</th></tr>');
                         $.each(investor.investment, function(i, stock) {
                             var temp = {
                                 'name': stock.name,
                                 'real_name': stock.real_name,
-                                'quantity': stock.quantity
+                                'quantity': stock.quantity,
+                                'paid': stock.paid
                             };
                             stocks.push(temp);
                             $('#investment').append(
                                 '<tr>' +
                                 '<td>' + stock.real_name + '</td>' +
                                 '<td id="qty_' + stock.name + '">' + stock.quantity + '</td>' +
+                                '<td id="paid_' + stock.name + '">' + stock.paid + '</td>' +
                                 '</tr>'
                             );
                         });
