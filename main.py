@@ -122,6 +122,9 @@ def trade_api():
 
 	qty = float(stock['quantity'])
 
+	if qty <= 0:
+		return -1
+
 	for doc in cursor:
 		price = doc['price'] * qty
 		price_before_charge = price
@@ -137,7 +140,7 @@ def trade_api():
 			if doc['quantity_bought'] > doc['quantity_max']:
 				doc['quantity_max'] = doc['quantity_bought']
 		else:
-			mu = -1* qty / 1100 # mean
+			mu = -1* qty / 1150 # mean
 			s = np.random.normal(mu, sigma, 1) * random.uniform(0,1)
 
 			doc['price'] = round(doc['price'] + s[0], 2)
@@ -156,6 +159,8 @@ def trade_api():
 		if stock['trade_type'] == "Buy":
 			price = price * 1.01 + 10
 			doc['cash'] = round(doc['cash'] - price, 2)
+			if doc['cash'] <= 0:
+				return -1
 			for data in doc['investment']:
 				if stock['name'] == data['name']:
 					data['quantity'] += qty 
@@ -192,7 +197,7 @@ def invest():
 		market_opened = doc['open']
 
 	client.close()
-	return template('views/index.html', market_opened=market_opened)
+	return template('views/index.html', market_opened=market_opened, page="home")
 
 @route("/company")
 def companies_api():
@@ -208,7 +213,7 @@ def companies_api():
 		incomes['income'] = round(doc['quantity_max'], 2)
 		companies_ls.append(incomes)
 	client.close()
-	return template('views/company.html', companies_ls=companies_ls)
+	return template('views/company.html', companies_ls=companies_ls, page="company")
 
 @route("/rank")
 def rank():
@@ -229,11 +234,28 @@ def rank():
 				if stock['name'] == c_doc['name']:
 					worth = c_doc['price'] * stock['quantity']
 					net_worth += worth
-		persons.append([doc['name'], net_worth])
+		if doc['name'] != "Investor":
+			persons.append([doc['name'], net_worth])
 
 	persons.sort(key=lambda tup: tup[1], reverse=True)
 
-	return template('views/rank.html', persons=persons)
+	return template('views/rank.html', persons=persons, page="rank")
+
+@route("/analysis")
+def invest():
+	MONGOLAB_URI="mongodb://heroku_app36386927:91dt3q2v6buluv8mg271s2mrlo@ds031852.mongolab.com:31852/heroku_app36386927"
+	client = MongoClient(MONGOLAB_URI)
+	db = client.get_default_database()
+
+	companies = db['companies']
+	cursor = companies.find()
+
+	data = []
+	for doc in cursor:
+		data.append([doc['real_name'], doc['price_opening'], doc['price_pitch'], doc['price_b_product'], doc['price_product'], doc['price']])
+
+	client.close()
+	return template('views/analysis.html', page="analysis", data=data)
 
 run(reloader=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), server='gevent')
 

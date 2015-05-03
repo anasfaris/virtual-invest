@@ -1,31 +1,19 @@
 .roboto-thin {
-	font-family: 'Roboto', sans-serif;
-	font-weight: 100;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 100;
 }
 
 .roboto-light {
-	font-family: 'Roboto', sans-serif;
-	font-weight: 300;
-}
-
-.myriad-light {
-	font-family: "myriad-pro",sans-serif;
-	font-style: normal;
-	font-weight: 300;
-}
-
-.myriad-regular {
-	font-family: "myriad-pro",sans-serif;
-	font-style: normal;
-	font-weight: 400;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
 }
 
 .main-icons a {
-	font-size: 30px;
-	color: #333333;
-	 transition: .25s ease-in-out;
-	-moz-transition: .25s ease-in-out;
-	-webkit-transition: .25s ease-in-out;
+    font-size: 30px;
+    color: #333333;
+    transition: .25s ease-in-out;
+    -moz-transition: .25s ease-in-out;
+    -webkit-transition: .25s ease-in-out;
 }
 
 .main-icons a.dropbox:hover {
@@ -45,9 +33,9 @@
 }
 
 body {
-	height: 100%;
-	position: absolute;
-	left: 0;
-	right: 0;
-	padding: 20px 0;
+    padding-top: 50px;
+    padding-bottom: 20px;
+    font-family: 'Roboto', sans-serif;
+    min-height: 100%;
+    position: relative;
 }

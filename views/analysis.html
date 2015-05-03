@@ -1,0 +1,41 @@
+%include views/shared/header.html
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h2>Company Analysis</h2>
+                <br>
+                <div id="chart"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+    <script src="bower_components/d3/d3.min.js"></script>
+    <script src="bower_components/c3/c3.min.js"></script>
+    <script>
+        var chart = c3.generate({
+            data: {
+                columns: [
+                    % for d in data:
+                        ["{{d[0]}}", {{d[1]}}, {{d[2]}}, {{d[3]}}, {{d[4]}}, {{d[5]}}],
+                    % end
+                ],
+            },
+            grid: {
+                x: {
+                    lines: [
+                        {value: 0.1, text: 'Opening'},
+                        {value: 1, text: 'Pitch'},
+                        {value: 2, text: 'Before 1st Launch'},
+                        {value: 3, text: '1st Launch'},
+                        {value: 4, text: 'Current Price'}
+                    ]
+                }
+            }
+            
+        });
+    </script>
+
+%include views/shared/footer.html
