@@ -125,6 +125,22 @@ def trade_api():
 	if qty <= 0:
 		return -1
 
+	investors = db['investors']
+	cursor = investors.find({'username':stock['username']})
+
+	for doc in cursor:
+		if stock['trade_type'] == "Buy":
+			if doc['cash'] <= 0:
+				return -1
+		else:
+			for data in doc['investment']:
+				if stock['name'] == data['name']:
+					check = data['quantity']
+					if check - qty < 0:
+						return -1
+					result['quantity'] = data['quantity']
+					data['paid'] -= price_before_charge
+
 	for doc in cursor:
 		price = doc['price'] * qty
 		price_before_charge = price
@@ -152,7 +168,6 @@ def trade_api():
 		# can be updated to read a new list rather than directly update and cause sync problem
 		companies.update({'_id':doc['_id']}, {"$set":doc})
 
-	investors = db['investors']
 	cursor = investors.find({'username':stock['username']})
 
 	for doc in cursor:
