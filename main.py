@@ -126,9 +126,9 @@ def trade_api():
 		return -1
 
 	investors = db['investors']
-	cursor = investors.find({'username':stock['username']})
+	cursor2 = investors.find({'username':stock['username']})
 
-	for doc in cursor:
+	for doc in cursor2:
 		if stock['trade_type'] == "Buy":
 			if doc['cash'] <= 0:
 				return -1
@@ -139,7 +139,6 @@ def trade_api():
 					if check - qty < 0:
 						return -1
 					result['quantity'] = data['quantity']
-					data['paid'] -= price_before_charge
 
 	for doc in cursor:
 		price = doc['price'] * qty
