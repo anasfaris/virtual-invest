@@ -198,7 +198,6 @@ def trade_api():
 
 @route("/")
 def invest():
-	MONGOLAB_URI="mongodb://heroku_app36386927:91dt3q2v6buluv8mg271s2mrlo@ds031852.mongolab.com:31852/heroku_app36386927"
 	client = MongoClient(MONGOLAB_URI)
 	db = client.get_default_database()
 
@@ -257,7 +256,6 @@ def rank():
 
 @route("/analysis")
 def invest():
-	MONGOLAB_URI="mongodb://heroku_app36386927:91dt3q2v6buluv8mg271s2mrlo@ds031852.mongolab.com:31852/heroku_app36386927"
 	client = MongoClient(MONGOLAB_URI)
 	db = client.get_default_database()
 
@@ -266,7 +264,7 @@ def invest():
 
 	data = []
 	for doc in cursor:
-		data.append([doc['real_name'], doc['price_opening'], doc['price_pitch'], doc['price_b_product'], doc['price_product'], doc['price']])
+		data.append([doc['real_name'], doc['price_opening'], doc['price_pitch'], doc['price_b_product'], doc['price_product'], doc['price_b_launch'], doc['price']])
 
 	client.close()
 	return template('views/analysis.html', page="analysis", data=data)
