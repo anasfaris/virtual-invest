@@ -1,4 +1,4 @@
-bottle==0.12.8
-pymongo==3.0.1
-gevent==1.0.1
-numpy==1.9.0
+bottle
+pymongo
+gevent
+numpy
